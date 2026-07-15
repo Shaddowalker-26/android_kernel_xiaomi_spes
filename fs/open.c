@@ -453,9 +453,16 @@ out:
 
 SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
 {
+#ifdef CONFIG_KSU
+	extern int ksu_handle_faccessat(int *dfd,
+			const char __user **filename_user,
+			int *mode, int *__unused_flags);
+	int flags = 0;
+
+	ksu_handle_faccessat(&dfd, &filename, &mode, &flags);
+#endif
 	return do_faccessat(dfd, filename, mode);
 }
-
 SYSCALL_DEFINE2(access, const char __user *, filename, int, mode)
 {
 	return do_faccessat(AT_FDCWD, filename, mode);
