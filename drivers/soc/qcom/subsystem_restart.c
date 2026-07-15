@@ -1816,6 +1816,10 @@ struct subsys_device *subsys_register(struct subsys_desc *desc)
 		return ERR_PTR(-ENOMEM);
 
 	subsys->desc = desc;
+if (!strcmp(desc->name, "modem"))
+    subsys->restart_level = RESET_SUBSYS_COUPLED;
+else
+    subsys->restart_level = RESET_SOC;
 	subsys->owner = desc->owner;
 	subsys->dev.parent = desc->dev;
 	subsys->dev.bus = &subsys_bus_type;
