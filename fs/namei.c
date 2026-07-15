@@ -1643,6 +1643,8 @@ static struct dentry *__lookup_hash(const struct qstr *name,
 {
 #ifdef CONFIG_KSU_SUSFS_SUS_PATH
 	struct dentry *dentry;
+        struct dentry *old;
+        struct inode *dir = base->d_inode;
 	bool found_sus_path = false;
 
 	if (base && base->d_inode && !found_sus_path) {
@@ -1660,13 +1662,12 @@ static struct dentry *__lookup_hash(const struct qstr *name,
 			goto retry;
 		}
 	}
+
 	dentry = lookup_dcache(name, base, flags);
 retry:
 #else
 	struct dentry *dentry = lookup_dcache(name, base, flags);
 #endif
-	struct dentry *old;
-	struct inode *dir = base->d_inode;
 
 	if (dentry)
 #ifdef CONFIG_KSU_SUSFS_SUS_PATH
