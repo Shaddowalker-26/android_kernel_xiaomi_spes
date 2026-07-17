@@ -259,9 +259,9 @@ static int cgroup_storage_get_next_key(struct bpf_map *_map, void *key,
 		storage = cgroup_storage_lookup(map, key, true);
 		if (!storage)
 			goto enoent;
-		storage = list_next_entry(storage, list);
-		if (list_entry_is_head(storage, &map->list, list))
-			goto enoent;
+		storage = list_next_entry(storage, list_map);
+                if (list_entry_is_head(storage, &map->list, list_map))
+                        goto enoent;
 	} else {
 		storage = list_first_entry(&map->list,
 					 struct bpf_cgroup_storage, list_map);
