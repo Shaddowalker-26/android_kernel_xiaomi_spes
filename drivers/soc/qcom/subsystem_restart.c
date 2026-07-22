@@ -1825,6 +1825,9 @@ struct subsys_device *subsys_register(struct subsys_desc *desc)
 	subsys->desc->state = NULL;
 	strlcpy(subsys->desc->fw_name, desc->name,
 			sizeof(subsys->desc->fw_name));
+        /* Avoid full SoC reboot on modem subsystem crashes */
+        if (!strcmp(desc->name, "modem"))
+	        subsys->restart_level = RESET_SUBSYS_COUPLED;
 
 	subsys->notify = subsys_notif_add_subsys(desc->name);
 	subsys->early_notify = subsys_get_early_notif_info(desc->name);
