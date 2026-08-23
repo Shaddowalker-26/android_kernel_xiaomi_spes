@@ -20,6 +20,7 @@
 #include <linux/list_sort.h>
 #include <net/sock.h>
 #include <linux/skbuff.h>
+#include <linux/sched/isolation.h>
 
 MODULE_LICENSE("GPL v2");
 /* Local Macros */
@@ -1227,11 +1228,10 @@ int rmnet_shs_wq_check_cpu_move_for_ep(u16 current_cpu, u16 dest_cpu,
 
 #ifdef CONFIG_SCHED_WALT
         rm_err("SHS_MASK:  cur cpu [%d] | dest_cpu [%d] | "
-               "cpu isolation_mask = 0x%x | ep_rps_mask = 0x%x | "
-               "cpu_online(dest) = %d cpu_in_rps_mask = %d | "
-               "cpu isolated(dest) = %d",
-               current_cpu, dest_cpu, __cpu_isolated_mask, ep->rps_config_msk,
-               cpu_online(dest_cpu), cpu_in_rps_mask, cpu_isolated(dest_cpu));
+               "ep_rps_mask = 0x%x | cpu_online(dest) = %d | "
+               "cpu_in_rps_mask = %d",
+               current_cpu, dest_cpu, ep->rps_config_msk,
+               cpu_online(dest_cpu), cpu_in_rps_mask);
 #else
         rm_err("SHS_MASK:  cur cpu [%d] | dest_cpu [%d] | "
                "ep_rps_mask = 0x%x | cpu_online(dest) = %d | "
@@ -1246,7 +1246,7 @@ int rmnet_shs_wq_check_cpu_move_for_ep(u16 current_cpu, u16 dest_cpu,
          * or if the dest cpu is isolated
          */
         if (current_cpu == dest_cpu || !cpu_online(dest_cpu) ||
-            !cpu_in_rps_mask || cpu_isolated(dest_cpu)) {
+            !cpu_in_rps_mask || !housekeeping_cpu(dest_cpu, HK_FLAG_MISC)) {
                 return 0;
         }
 #else
@@ -1420,8 +1420,7 @@ void rmnet_shs_wq_debug_print_flows(void)
 		       cpu_num, flows, cpu_node->rx_pps, cpu_node->rx_bps,
 		       cpu_node->qhead_diff, cpu_node->qhead_total,
 		       cpu_node->qhead_start,
-		       cpu_node->qhead, cpu_node->last_qhead,
-		       cpu_isolated(cpu_num));
+		       cpu_node->qhead, cpu_node->last_qhead);
 
 		list_for_each_entry(hnode,
 				    &rmnet_shs_wq_hstat_tbl,
