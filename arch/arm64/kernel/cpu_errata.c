@@ -747,8 +747,6 @@ static const struct midr_range arm64_workaround_845719_cpus[] = {
 };
 
 #endif
-
-
 #ifdef CONFIG_ARM64_WORKAROUND_REPEAT_TLBI
 static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
 #ifdef CONFIG_QCOM_FALKOR_ERRATUM_1009
